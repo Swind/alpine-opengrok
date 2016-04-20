@@ -1,5 +1,7 @@
 FROM davidcaste/alpine-tomcat:jdk8tomcat7
 
+MAINTAINER Swind Ou
+
 ENV OPENGROK_INSTANCE_BASE /var/opengrok
 ENV OPENGROK_TOMCAT_BASE=/opt/tomcat
 
@@ -7,13 +9,17 @@ RUN mkdir /var/opengrok;\
 mkdir /var/opengrok/data;\
 mkdir /var/opengrok/etc
 
-RUN apk upgrade --update && \
-    apk add ctags git wget
+RUN apk upgrade --update 
+RUN apk add --upgrade  \
+    wget \ 
+    ctags \
+    git \
+    && rm -rf /var/cache/apk/*
 
-ADD opengrok-0.12.1.5.tar.gz /tmp/
-RUN mv /tmp/opengrok-0.12.1.5/* /var/opengrok/
+RUN curl -SL https://github.com/OpenGrok/OpenGrok/files/213268/opengrok-0.12.1.5.tar.gz \
+    | tar -zxC /var
 
-ENV PATH /var/opengrok/bin:$PATH
+ENV PATH /var/opengrok-0.12.1.5/bin:$PATH
 RUN OpenGrok deploy
 
 RUN mkdir /src
